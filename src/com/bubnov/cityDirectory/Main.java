@@ -2,10 +2,7 @@ package com.bubnov.cityDirectory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
 
@@ -33,6 +30,8 @@ public class Main {
 
         }
 
+        City[] notSortedCities = new City[cities.size()];
+        notSortedCities = cities.toArray(notSortedCities);
 
         cities.sort(
                 new Comparator<City>() {
@@ -69,6 +68,42 @@ public class Main {
         for (City city : cities) {
             System.out.println(city);
         }
+
+
+        System.out.println("\nГород с наибольшим количеством жителей");
+
+        int maxPopulation = 0;
+        int index = 0;
+        int maxIndex = 0;
+
+        for (City city : notSortedCities) {
+            index++;
+            if (city.getPopulation() > maxPopulation) {
+                maxPopulation = city.getPopulation();
+                maxIndex = index;
+            }
+        }
+
+        System.out.printf("[%d] = %,d", maxIndex, maxPopulation );
+
+        System.out.println("\nГорода в разрезе регионов:");
+
+        Map<String, Integer> hashMap = new HashMap<>();
+        for (City city : notSortedCities ) {
+            Integer i = hashMap.get(city.getRegion());
+            if (i == null) {
+                hashMap.put(city.getRegion(), 1);
+            } else {
+                hashMap.put(city.getRegion(), i + 1);
+            }
+        }
+        Set<String> regions = hashMap.keySet();
+
+        for (String region : regions) {
+            System.out.println(region + " - " + hashMap.get(region));
+        }
+
+
 
 
     }
