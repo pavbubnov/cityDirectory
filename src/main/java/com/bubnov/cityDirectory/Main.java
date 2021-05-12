@@ -1,33 +1,40 @@
 package com.bubnov.cityDirectory;
 
-import com.bubnov.cityDirectory.tasks.MaxPopulation;
-import com.bubnov.cityDirectory.tasks.ReadFile;
-import com.bubnov.cityDirectory.tasks.RegionCount;
-import com.bubnov.cityDirectory.tasks.Sorting;
-
-import java.io.IOException;
-import java.util.*;
+import com.bubnov.cityDirectory.output.Print;
+import com.bubnov.cityDirectory.tasks.Read;
+import com.bubnov.cityDirectory.tasks.Task;
+import java.util.List;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args)  {
+        Read read = new Read();
+        try {
+            List<City> notSortedCitiesList = read.readFromFile("cities.txt");
+            start(notSortedCitiesList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Проверьте корректность файла");
+        }
+    }
 
-
-        ReadFile readFile = new ReadFile();
-        List<City> cities = readFile.readFromFile("cities.txt");
-        Sorting sorting = new Sorting();
-        City[] notSortedCities = sorting.createArray(cities);
-
-        sorting.sortByName(cities);
-        sorting.sortByDistrictAndName(cities);
-
-        MaxPopulation maxPopulation = new MaxPopulation();
-        maxPopulation.findMaxPopulation(notSortedCities);
-
-        RegionCount regionCount = new RegionCount();
-        regionCount.countCityByRegions(cities);
-
-
+    public static void start(List<City> notSortedCitiesList) {
+        Print print = new Print();
+        Task task = new Task(notSortedCitiesList);
+        System.out.println("\nСписок без сортировки");
+        print.printCityList(notSortedCitiesList);
+        List<City> sortedByName = task.sortByName();
+        System.out.println("\nСписок, отсортированный по именам");
+        print.printCityList(sortedByName);
+        List<City> sortByDistrictAndName = task.sortByDistrictAndName();
+        System.out.println("\nСписок, отсортированный по наименованию Федерального округа и наименованию города");
+        print.printCityList(sortByDistrictAndName);
+        String maxPopulationInfo = task.findMaxPopulation();
+        System.out.println("\nГород с наибольшим количеством жителей");
+        print.printString(maxPopulationInfo);
+        List<String> cityRegionInformation = task.countCityByRegions();
+        System.out.println("\nГорода в разрезе регионов:");
+        print.printStringList(cityRegionInformation);
     }
 
 }

@@ -1,7 +1,6 @@
 import com.bubnov.cityDirectory.City;
-import com.bubnov.cityDirectory.tasks.MaxPopulation;
-import com.bubnov.cityDirectory.tasks.ReadFile;
-import com.bubnov.cityDirectory.tasks.Sorting;
+import com.bubnov.cityDirectory.tasks.Read;
+import com.bubnov.cityDirectory.tasks.Task;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -10,23 +9,13 @@ import java.util.List;
 
 public class moduleThreeTest {
 
-
     @Test
     public void testFindMaxPopulation() throws FileNotFoundException {
-
-        ReadFile readFile = new ReadFile();
-        List<City> notSortedList = readFile.readFromFile("testModuleThree.txt");
-
-        Sorting sorting = new Sorting();
-        City[] notSortedArray = sorting.createArray(notSortedList);
-
-        MaxPopulation maxPopulation = new MaxPopulation();
-
-
-        maxPopulation.findMaxPopulation(notSortedArray);
-        Assert.assertEquals(maxPopulation.findMaxPopulation(notSortedArray),
+        Read read = new Read();
+        List<City> notSortedList = read.readFromFile(getClass().getResource("testModuleThree.txt").getFile());
+        Task task = new Task(notSortedList);
+        Assert.assertEquals(task.findMaxPopulation(),
                 String.format("[%d] = %,d", 5, 165183));
-
     }
 
 }
