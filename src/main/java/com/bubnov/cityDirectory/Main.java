@@ -6,7 +6,6 @@ import com.bubnov.cityDirectory.output.Print;
 import com.bubnov.cityDirectory.tasks.Read;
 import com.bubnov.cityDirectory.tasks.Task;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -21,9 +20,7 @@ public class Main {
             e.printStackTrace();
             System.out.println("Проверьте корректность файла");
         }
-
         startDatabase();
-
     }
 
     public static void start(List<City> notSortedCitiesList) {
@@ -46,23 +43,31 @@ public class Main {
     }
 
     public static void startDatabase() {
-
+        MyDatabase.getH2Connection();
         try {
-            Connection connection = MyDatabase.getH2Connection();
-            MyDatabase.execute(connection, Query.CREATE_TABLE);
-            MyDatabase.execute(connection, Query.POST_START_CITIES);
-            System.out.println("\nВывод всех городов");
-            MyDatabase.selectAll(connection);
-            MyDatabase.postCity(connection, "Новый Город", "Новая область", "Новый регион",
-                    10000, "2021");
-            System.out.println("\nВывод всех городов после создания");
-            MyDatabase.selectAll(connection);
-
-        } catch (SQLException ex) {
-            System.out.println("Database connection failure: "
-                    + ex.getMessage());
+            MyDatabase.execute(Query.CREATE_TABLE);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
+        try {
+            MyDatabase.execute(Query.POST_START_CITIES);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        System.out.println("\nВывод всех городов");
+        MyDatabase.selectAll().forEach(System.out::println);
+        City newCity = new City("Новый Город", "Новая область", "Новый регион",
+                10000, "2021");
+        MyDatabase.postCity(newCity);
+        System.out.println("\nВывод всех городов после создания");
+        MyDatabase.selectAll().forEach(System.out::println);
+        MyDatabase.deleteCity(newCity);
+        System.out.println("\nВывод всех городов после удаления");
+        MyDatabase.selectAll().forEach(System.out::println);
+        System.out.println("\nВывод города по имени Амурск");
+        System.out.println(MyDatabase.getCityByName("Амурск"));
+        System.out.println("\nВывод обнвленного горада");
+        MyDatabase.updateCity(newCity, "Алдан");
+        MyDatabase.selectAll().forEach(System.out::println);
     }
-
-
 }

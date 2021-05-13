@@ -5,7 +5,7 @@ public class Query {
     public static final String CREATE_TABLE =
             "CREATE TABLE CITIES(\n" +
                     " id INT PRIMARY KEY AUTO_INCREMENT,\n" +
-                    " name VARCHAR(255),\n" +
+                    " name VARCHAR(255) UNIQUE,\n" +
                     " district VARCHAR(255),\n" +
                     " region VARCHAR(255),\n" +
                     " population long,\n" +
