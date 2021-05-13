@@ -1,6 +1,8 @@
 package com.bubnov.cityDirectory.h2Database;
 
 import com.bubnov.cityDirectory.City;
+import com.bubnov.cityDirectory.Exception.MyDatabaseException;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -20,27 +22,25 @@ public class MyDatabase {
                 db = DriverManager.getConnection("jdbc:h2:mem:");
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
-                System.out.println("Не удалось установить соединение с базой данныйх");
+                throw new MyDatabaseException("Не удалось установить соединение с базой данныйх");
             }
         }
     }
 
     public static void execute(String query) throws SQLException {
-
-            Statement dataQuery = db.createStatement();
-            dataQuery.execute(query);
-
+        Statement dataQuery = db.createStatement();
+        dataQuery.execute(query);
     }
 
     public static void postCity(City city) {
-        String query = "INSERT INTO CITIES(NAME, DISTRICT, REGION, POPULATION, FOUNDATION)\n" +
+        String query = "INSERT INTO CITIES(NAME, REGION, DISTRICT, POPULATION, FOUNDATION)\n" +
                 "VALUES" +
                 "('" +
                 city.getName() +
                 "', '" +
-                city.getDistrict() +
-                "', '" +
                 city.getRegion() +
+                "', '" +
+                city.getDistrict() +
                 "', +" +
                 city.getPopulation() +
                 "," +
@@ -49,11 +49,9 @@ public class MyDatabase {
         try {
             execute(query);
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
-            System.out.println("Не удалось добавить город");
+            throw new MyDatabaseException("Не удалось добавить город: " + city.getName());
         }
     }
-
 
     public static void deleteCity(City city) {
         String query = "DELETE FROM CITIES WHERE NAME = '" +
@@ -61,8 +59,7 @@ public class MyDatabase {
         try {
             execute(query);
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
-            System.out.println("Не удалось удалить город");
+            throw new MyDatabaseException("Не удалось удалить город: " + city.getName());
         }
     }
 
@@ -70,15 +67,13 @@ public class MyDatabase {
         String query = "SELECT * FROM CITIES WHERE NAME = '" +
                 name + "';";
         City city = new City();
-
         try {
             PreparedStatement preparedStatement = db.prepareStatement(query);
             ResultSet rs = preparedStatement.executeQuery();
             rs.next();
             city = readCityFromRS(rs);
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Не удалось найти город с именем" + name);
+            throw new MyDatabaseException("Не удалось найти город с именем: " + name);
         }
         return city;
     }
@@ -92,21 +87,16 @@ public class MyDatabase {
                 "        POPULATION = " + newVersionCity.getPopulation() + ",\n" +
                 "        FOUNDATION = " + newVersionCity.getFoundation() + "\n" +
                 "        WHERE NAME = '" + name + "';";
-
         try {
             execute(query);
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
-            System.out.println("Не удалось обновить город");
+            throw new MyDatabaseException("Не удалось обновить город: " + newVersionCity.getName());
         }
         return getCityByName(newVersionCity.getName());
-
     }
 
     public static List<City> selectAll() {
-
         List<City> cities = new ArrayList<>();
-
         try (PreparedStatement query =
                      db.prepareStatement("SELECT * FROM CITIES")) {
             ResultSet rs = query.executeQuery();
@@ -116,19 +106,16 @@ public class MyDatabase {
             }
             rs.close();
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
-            System.out.println("Не удалось вывести данные");
+            throw new MyDatabaseException("ННе удалось вывести данные");
         }
-
         return cities;
     }
 
     private static City readCityFromRS(ResultSet rs) throws SQLException {
-        return new City(rs.getString("NAME"), rs.getString("DISTRICT"),
-                rs.getString("REGION"), rs.getInt("POPULATION"),
+        return new City(rs.getString("NAME"), rs.getString("REGION"),
+                rs.getString("DISTRICT"), rs.getInt("POPULATION"),
                 rs.getString("FOUNDATION"));
     }
-
 
 }
 

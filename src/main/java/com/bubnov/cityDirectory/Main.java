@@ -56,7 +56,7 @@ public class Main {
         }
         System.out.println("\nВывод всех городов");
         MyDatabase.selectAll().forEach(System.out::println);
-        City newCity = new City("Новый Город", "Новая область", "Новый регион",
+        City newCity = new City("Новый Город", "Новый регион", "Новая область",
                 10000, "2021");
         MyDatabase.postCity(newCity);
         System.out.println("\nВывод всех городов после создания");
@@ -66,7 +66,7 @@ public class Main {
         MyDatabase.selectAll().forEach(System.out::println);
         System.out.println("\nВывод города по имени Амурск");
         System.out.println(MyDatabase.getCityByName("Амурск"));
-        System.out.println("\nВывод обнвленного горада");
+        System.out.println("\nВывод обновленного города");
         MyDatabase.updateCity(newCity, "Алдан");
         MyDatabase.selectAll().forEach(System.out::println);
     }
